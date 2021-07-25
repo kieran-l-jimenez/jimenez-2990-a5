@@ -49,11 +49,15 @@ class InventoryController {
 }
 
 class Inventory {
-- items : ArrayList<Item>
+- itemsArrayList : ArrayList<Item>
+
++ Inventory()
 
 '3.0, calls checkConflict
 + addItem()
-+ getItem()
++ getItemSerialIndex() : int
++ getItemNameIndex() : int
++ getItemObject() : Item
 '5
 + editItemValue()
 '6.0, calls checkConflict
@@ -64,7 +68,7 @@ class Inventory {
 + removeItem()
 '3.1, 6.1
 + checkConflict() : boolean
-
++ checkParameters() : boolean
 }
 
 class Item {
@@ -76,6 +80,7 @@ class Item {
 -name : String
 
 + Item()
++ Item(Double, String, String)
 
 + setMonetaryValue()
 + getMonetaryValue() : Double

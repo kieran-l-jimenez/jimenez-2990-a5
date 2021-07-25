@@ -1,2 +1,4 @@
 ucf/assignments/ItemTest.java
  ucf.assignments.ItemTest
+ucf/assignments/InventoryTest.java
+ ucf.assignments.InventoryTest

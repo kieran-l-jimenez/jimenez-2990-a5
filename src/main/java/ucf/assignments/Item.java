@@ -19,6 +19,12 @@ public class Item {
         this.name = "unfilledName";
     }
 
+    public Item(Double value, String serial, String nameIn) {
+        this.monetaryValue = value;
+        this.serialNumber = serial;
+        this.name = nameIn;
+    }
+
     public void setMonetaryValue(Double monetaryValue) {
         this.monetaryValue = monetaryValue;
     }
