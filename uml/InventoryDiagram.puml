@@ -1,0 +1,93 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Initializable{}
+
+class App {
+    + main()
+    + start()
+}
+
+class InventoryController {
+- currentInventory : Inventory
+'13.2, 14.1
+- fileChooser : FileChooser
+
+'1
+'10
++ sortNamePressed()
+'9
++ sortSerialNumberPressed()
+'8
++ sortValuePressed()
+'3
++ newItemPressed()
+'11
++ searchSerialNumberPressed()
+'12
++ searchNamePressed()
+'13.0
++ saveInventoryPressed()
+'14.0
++ loadInventoryPressed()
+
++ initialize()
++ makeItem()
+'7
++ editItemName()
++ editItemValue()
+'TODO + invalidSerialNumber(), open popup error window if I can figure out multiple tabs, otherwise change a text box to say error next to newItem button, calls search
++ searchInventoryBySerialNumber() : Item
++ searchInventoryByName() : Item
+'13.1.1
++ saveTSVFormat()
+'13.1.2
++ saveHTMLFormat()
+'13.1.3
++ saveJSONFormat()
++ loadInventory()
+}
+
+class Inventory {
+- items : ArrayList<Item>
+
+'3.0, calls checkConflict
++ addItem()
++ getItem()
+'5
++ editItemValue()
+'6.0, calls checkConflict
++ editItemSerialNumber()
+'7
++ editItemName()
+'4
++ removeItem()
+'3.1, 6.1
++ checkConflict() : boolean
+
+}
+
+class Item {
+'2.1
+-monetaryValue : Double
+'2.2
+-serialNumber : String
+'2.3
+-name : String
+
++ Item()
+
++ setMonetaryValue()
++ getMonetaryValue() : Double
++ setSerialNumber()
++ getSerialNumber() : String
++ setName()
++ getName() : String
+}
+
+javafx.Application <|-- App
+App - InventoryController
+Initializable <|.. InventoryController
+InventoryController -- Inventory
+Inventory "1 " *-- "many" Item
+@enduml
