@@ -1,20 +1,25 @@
 /*
  * Inventory
  *
- * 2021-07-24
+ * 2021-07-25
  *
  *  UCF COP3330 Summer 2021 Assignment 5 Solution
  *  Copyright 2021 Kieran Jimenez
  */
 package ucf.assignments;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.util.ArrayList;
 
 public class Inventory {
     private ArrayList<Item> itemsArrayList;
+    private ObservableList<Item> itemsObservable;
 
     public Inventory() {
         itemsArrayList = new ArrayList<>();
+        itemsObservable = FXCollections.observableArrayList();
     }
 
     public void addItem(Double val, String serNum, String name) throws Exception {
@@ -59,6 +64,12 @@ public class Inventory {
             throw new Exception("Improper Item Input Value");
         }
         pendingItem.setMonetaryValue(newVal);
+    }
+
+    public ObservableList<Item> getItemsObservable() {
+        itemsObservable.clear();
+        itemsObservable.addAll(itemsArrayList);
+        return itemsObservable;
     }
 
     public void editItemSerialNumber(Item pendingItem, String newSerNum) throws Exception {

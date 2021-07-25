@@ -10,9 +10,13 @@ class App {
 
 class InventoryController {
 - inventoryTable : TableView
+- valColumn : TableColumn
+- serColumn : TableColumn
+- nameColumn : TableColumn
 - inputValue : TextField
 - inputSerial : TextField
 - inputName : TextField
+- errorLabel : Label
 
 - currentInventory : Inventory
 '13.2, 14.1
@@ -24,6 +28,12 @@ class InventoryController {
 + newItemPressed()
 '4
 + deleteItemPressed()
+'5
++ editItemValuePressed()
+'6
++ editItemSerialPressed()
+'7
++ editItemNamePressed()
 '11
 + searchSerialNumberPressed()
 '12
@@ -35,12 +45,12 @@ class InventoryController {
 
 + initialize()
 + makeItem()
++ removeItem()
 '7 handled in TableView
 '+ editItemName()
 '+ editItemValue()
-'TODO + invalidSerialNumber(), open popup error window if I can figure out multiple tabs, otherwise change a text box to say error next to newItem button, calls search
-+ searchInventoryBySerialNumber() : Item
-+ searchInventoryByName() : Item
++ searchInventoryBySerialNumber()
++ searchInventoryByName()
 '13.1.1
 + saveTSVFormat()
 '13.1.2
@@ -52,6 +62,7 @@ class InventoryController {
 
 class Inventory {
 - itemsArrayList : ArrayList<Item>
+- itemsObservable : ObservableList<Item>
 
 + Inventory()
 
@@ -60,6 +71,7 @@ class Inventory {
 + getItemSerialIndex() : int
 + getItemNameIndex() : int
 + getItemObject() : Item
++ getItemsObservable : ObservableList<Item>
 '5
 + editItemValue()
 '6.0, calls checkConflict
@@ -69,7 +81,7 @@ class Inventory {
 '4
 + removeItem()
 '3.1, 6.1
-- checkConflict() : boolean
++ checkConflict() : boolean
 - checkParameters() : boolean
 }
 

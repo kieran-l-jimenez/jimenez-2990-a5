@@ -9,7 +9,7 @@ class ItemTest {
     @Test
     void getMonetaryValue1() {
         //new item
-        Item test = new Item();
+        Item test = new Item(29.99, "0123456789", "ib");
         //set value
         test.setMonetaryValue(29.99);
         //assert value is expected
