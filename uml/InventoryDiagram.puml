@@ -9,19 +9,21 @@ class App {
 }
 
 class InventoryController {
+- inventoryTable : TableView
+- inputValue : TextField
+- inputSerial : TextField
+- inputName : TextField
+
 - currentInventory : Inventory
 '13.2, 14.1
 - fileChooser : FileChooser
 
 '1
-'10
-+ sortNamePressed()
-'9
-+ sortSerialNumberPressed()
-'8
-+ sortValuePressed()
+'8-10 handled in TableView
 '3
 + newItemPressed()
+'4
++ deleteItemPressed()
 '11
 + searchSerialNumberPressed()
 '12
@@ -33,9 +35,9 @@ class InventoryController {
 
 + initialize()
 + makeItem()
-'7
-+ editItemName()
-+ editItemValue()
+'7 handled in TableView
+'+ editItemName()
+'+ editItemValue()
 'TODO + invalidSerialNumber(), open popup error window if I can figure out multiple tabs, otherwise change a text box to say error next to newItem button, calls search
 + searchInventoryBySerialNumber() : Item
 + searchInventoryByName() : Item
