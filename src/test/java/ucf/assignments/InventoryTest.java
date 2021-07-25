@@ -11,9 +11,7 @@ class InventoryTest {
         //create temp Inventory
         Inventory temp = new Inventory();
         //assert Throw when adding new item with wrong sized name
-        assertThrows(Exception.class, () -> {
-            temp.addItem(19.99, "0123456789", "a");
-        });
+        assertThrows(Exception.class, () -> temp.addItem(19.99, "0123456789", "a"));
     }
 
     @Test
@@ -21,9 +19,7 @@ class InventoryTest {
         //create temp Inventory
         Inventory temp = new Inventory();
         //assert Throw when adding new item with improper serial number format
-        assertThrows(Exception.class, () -> {
-            temp.addItem(19.99, "short", "generic Tech Device");
-        });
+        assertThrows(Exception.class, () -> temp.addItem(19.99, "short", "generic Tech Device"));
     }
 
     @Test
@@ -37,9 +33,7 @@ class InventoryTest {
             e.printStackTrace();
         }
         //assert Throw when adding new item with same serial number
-        assertThrows(Exception.class, () -> {
-            temp.addItem(19.99, "0123456789", "similar Tech Device");
-        });
+        assertThrows(Exception.class, () -> temp.addItem(19.99, "0123456789", "similar Tech Device"));
     }
 
     @Test
@@ -47,9 +41,7 @@ class InventoryTest {
         //create temp Inventory
         Inventory temp = new Inventory();
         //assert Throw when adding new item with negative value
-        assertThrows(Exception.class, () -> {
-            temp.addItem(-19.99, "0123456789", "similar Tech Device");
-        });
+        assertThrows(Exception.class, () -> temp.addItem(-19.99, "0123456789", "similar Tech Device"));
     }
 
     @Test
@@ -81,10 +73,8 @@ class InventoryTest {
             e.printStackTrace();
         }
         //assert throw when changing 2nd item to have same serial as 1st
-        assertThrows(Exception.class, () -> {
-            temp.editItemSerialNumber(temp.getItemObject(temp.getItemNameIndex("similar Tech Device")),
-                    "0123456789");
-        });
+        assertThrows(Exception.class, () -> temp.editItemSerialNumber(temp.getItemObject(1),
+                "0123456789"));
     }
 
     @Test
@@ -92,8 +82,15 @@ class InventoryTest {
         //create temp Inventory
         Inventory temp = new Inventory();
         //add item
-        //change item name
+        try {
+            temp.addItem(19.99, "0123456789", "generic Tech Device");
+            //change item name
+            temp.editItemName(temp.getItemObject(temp.getItemNameIndex("generic Tech Device")), "old Device");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //assert equal new name and item name
+        assertEquals("old Device", temp.getItemObject(temp.getItemSerialIndex("0123456789")).getName());
     }
 
     @Test
@@ -101,7 +98,16 @@ class InventoryTest {
         //create temp Inventory
         Inventory temp = new Inventory();
         //add 3 items
-        //remove 2nd item
+        try {
+            temp.addItem(19.99, "0123456789", "generic Tech Device");
+            temp.addItem(19.99, "1234567890", "similar Tech Device");
+            temp.addItem(19.98, "abcdeabcde", "competitive Tech Device");
+            //remove 2nd item
+            temp.removeItem(temp.getItemObject(temp.getItemSerialIndex("1234567890")));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //assert equal 3rd serial and new 2nd item(originally 3rd item)
+        assertEquals("abcdeabcde", temp.getItemObject(1).getSerialNumber());
     }
 }

@@ -67,8 +67,8 @@ class Inventory {
 '4
 + removeItem()
 '3.1, 6.1
-+ checkConflict() : boolean
-+ checkParameters() : boolean
+- checkConflict() : boolean
+- checkParameters() : boolean
 }
 
 class Item {

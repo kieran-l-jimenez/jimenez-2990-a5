@@ -19,7 +19,7 @@ public class Inventory {
 
     public void addItem(Double val, String serNum, String name) throws Exception {
         //check that all arguments fit parameters
-        if (!this.checkParameters(val, serNum, name) && !this.checkConflict(serNum)) {
+        if (this.checkParameters(val, serNum, name) || this.checkConflict(serNum)) {
             throw new Exception("Improper Item Input");
         }
         //declare temp Item variable with arguments
@@ -55,22 +55,22 @@ public class Inventory {
     }
 
     public void editItemValue(Item pendingItem, Double newVal) throws Exception {
-        if (!this.checkParameters(newVal, pendingItem.getSerialNumber(), pendingItem.getName())) {
+        if (this.checkParameters(newVal, pendingItem.getSerialNumber(), pendingItem.getName())) {
             throw new Exception("Improper Item Input Value");
         }
         pendingItem.setMonetaryValue(newVal);
     }
 
     public void editItemSerialNumber(Item pendingItem, String newSerNum) throws Exception {
-        if (!this.checkParameters(pendingItem.getMonetaryValue(), newSerNum, pendingItem.getName())
-                && !this.checkConflict(newSerNum)) {
+        if (this.checkParameters(pendingItem.getMonetaryValue(), newSerNum, pendingItem.getName())
+                || this.checkConflict(newSerNum)) {
             throw new Exception("Improper Item Input Serial");
         }
         pendingItem.setSerialNumber(newSerNum);
     }
 
     public void editItemName(Item pendingItem, String newName) throws Exception {
-        if (!this.checkParameters(pendingItem.getMonetaryValue(), pendingItem.getSerialNumber(), newName)) {
+        if (this.checkParameters(pendingItem.getMonetaryValue(), pendingItem.getSerialNumber(), newName)) {
             throw new Exception("Improper Item Input Name");
         }
         pendingItem.setName(newName);
@@ -93,7 +93,8 @@ public class Inventory {
     }
 
     private boolean checkParameters(Double val, String serNum, String name) {
-        return val >= 0 && serNum.matches("\\w\\w\\w\\w\\w\\w\\w\\w\\w\\w") && name.length() >= 2
-                && name.length() <= 256;
+        //return true if there is a problem
+        return val < 0 || !serNum.matches("\\w\\w\\w\\w\\w\\w\\w\\w\\w\\w") || name.length() < 2
+                || name.length() > 256;
     }
 }
