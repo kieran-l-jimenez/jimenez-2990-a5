@@ -321,28 +321,31 @@ public class InventoryController implements Initializable {
                     }
                     break;
                 case "text/html":
-                    //.html - skip to item list (skip first 9 lines), when encountering <tr>, ready for new item, read between <td> for elements in order
+                    //.html - skip to item list (skip first 4 lines), when encountering <tr>, ready for new item, read between <td> for elements in order
                         //call currentInventory addItem, if </tr> stop checking for items
                     List<String> htmlArray = Files.readAllLines(file.toPath());
 
                     Iterator iteratorHTML = htmlArray.listIterator();
+
+
                     for (int i = 0; i < 9; i++) {
                         iteratorHTML.next();
                     }
 
-                    while (iteratorHTML.hasNext() && iteratorHTML.next().equals("</table>\n")) {//<tr>
+                    while (!iteratorHTML.next().equals("</table>")) {//<tr>
                         String[] piecesHTML = new String[3];
-                        StringTokenizer tempTokenizer;
-                        tempTokenizer = new StringTokenizer(iteratorHTML.next().toString(), "<>");//<td>Value</td> becomes td, Value, /td
-                        tempTokenizer.nextToken();//skips td
-                        piecesHTML[0] = tempTokenizer.nextToken();//assign value
-                        tempTokenizer = new StringTokenizer(iteratorHTML.next().toString(), "<>");;//<td>Serial Number</td> becomes td, Serial Number, /td
-                        tempTokenizer.nextToken();//skips td
-                        piecesHTML[1] = tempTokenizer.nextToken();//assign Serial Number
-                        tempTokenizer = new StringTokenizer(iteratorHTML.next().toString(), "<>");;//<td>Name</td> becomes td, Name, /td
-                        tempTokenizer.nextToken();//skips td
-                        piecesHTML[2] = tempTokenizer.nextToken();//assign Name
+
+                        String[] tempTokens = iteratorHTML.next().toString().split("<|>", 6);
+                        piecesHTML[0] = tempTokens[2];
+
+                        tempTokens = iteratorHTML.next().toString().split("<|>", 6);
+                        piecesHTML[1] = tempTokens[2];
+
+                        tempTokens = iteratorHTML.next().toString().split("<|>", 6);
+                        piecesHTML[2] = tempTokens[2];
+
                         iteratorHTML.next();//<tr>
+
                         currentInventory.addItem(Double.parseDouble(piecesHTML[0]), piecesHTML[1], piecesHTML[2]);
                     }
                     break;
@@ -354,6 +357,7 @@ public class InventoryController implements Initializable {
                     break;
             }
 
+            inventoryTable.setItems(currentInventory.getItemsObservable());
             inventoryTable.getSelectionModel().clearSelection();
             inputValue.setText("");
             inputSerial.setText("");
