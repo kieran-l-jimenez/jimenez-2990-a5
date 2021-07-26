@@ -24,7 +24,7 @@ public class Item {
     }
 
     public Item(Double value, String serial, String nameIn) {
-        this.monetaryValue = value;
+        this.monetaryValue = Math.round(value*100.0)/100.0;
         this.serialNumber = new SimpleStringProperty();
         this.serialNumber.set(serial);
         this.name = new SimpleStringProperty();
@@ -32,7 +32,7 @@ public class Item {
     }
 
     public void setMonetaryValue(Double monetaryValue) {
-        this.monetaryValue = monetaryValue;
+        this.monetaryValue = Math.round(monetaryValue*100.0)/100.0;
     }
 
     public Double getMonetaryValue() {

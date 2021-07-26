@@ -42,14 +42,14 @@ public class InventoryController implements Initializable {
         if (!inputValue.getText().isEmpty() && !inputName.getText().isEmpty() && !inputSerial.getText().isEmpty()) {
             //call make item
             makeItem(Double.parseDouble(inputValue.getText()), inputSerial.getText(), inputName.getText());
+            //select new item
+            inventoryTable.getSelectionModel().select(currentInventory.getItemSerialIndex(inputSerial.getText()));
             inputValue.setText("");
             inputSerial.setText("");
             inputName.setText("");
         } else {
             errorLabel.setText("Fill every box before \nattempting to add a new item.");
         }
-        //select new item
-        inventoryTable.getSelectionModel().select(currentInventory.getItemSerialIndex(inputSerial.getText()));
     }
 
     @FXML
@@ -57,7 +57,7 @@ public class InventoryController implements Initializable {
         //if there is a selected item
         if (inventoryTable.getSelectionModel().getSelectedIndex() != -1) {
             //call remove item
-            removeItem((Item) inventoryTable.getSelectionModel().getSelectedItem());
+            removeItem(inventoryTable.getSelectionModel().getSelectedItem());
         } else {
             errorLabel.setText("Select an item before \nattempting to delete an item");
         }
@@ -195,12 +195,13 @@ public class InventoryController implements Initializable {
 
     public void searchInventoryBySerialNumber(String text) {
         //call getItemSerialIndex
-        int tempIndex = currentInventory.getItemNameIndex(text);
+        int tempIndex = currentInventory.getItemSerialIndex(text);
         //if not -1, change tableview selected row to returned index
         if (tempIndex != -1) {
-            inventoryTable.getSelectionModel().select(tempIndex);
-            inventoryTable.scrollTo(tempIndex);
-            errorLabel.setText("");
+            inventoryTable.getSelectionModel().select(currentInventory.getItemObject(tempIndex));
+            inventoryTable.scrollTo(currentInventory.getItemObject(tempIndex));
+            errorLabel.setText(String.format("Serial Number found in position %d.",
+                    inventoryTable.getSelectionModel().getSelectedIndex()+1));
         } else {
             //if -1 returned then say not found
             errorLabel.setText(String.format("Serial Number \"%s\" not found.", text));
@@ -213,9 +214,10 @@ public class InventoryController implements Initializable {
         int tempIndex = currentInventory.getItemNameIndex(text);
         //if not -1, change tableview selected row to returned index and scrollTo index
         if (tempIndex != -1) {
-            inventoryTable.getSelectionModel().select(tempIndex);
-            inventoryTable.scrollTo(tempIndex);
-            errorLabel.setText("");
+            inventoryTable.getSelectionModel().select(currentInventory.getItemObject(tempIndex));
+            inventoryTable.scrollTo(currentInventory.getItemObject(tempIndex));
+            errorLabel.setText(String.format("Item Name found in position %d.",
+                    inventoryTable.getSelectionModel().getSelectedIndex()+1));
         } else {
             //if -1 returned then say not found
             errorLabel.setText(String.format("Item Name \"%s\" not found.", text));
