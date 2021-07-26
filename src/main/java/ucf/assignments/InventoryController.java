@@ -161,6 +161,7 @@ public class InventoryController implements Initializable {
                 case "text/plain" -> saveTSVFormat(file);
                 case "text/html" -> saveHTMLFormat(file);
                 case "application/json" -> saveJSONFormat(file);
+                default -> saveJSONFormat(file);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -302,10 +303,11 @@ public class InventoryController implements Initializable {
     public void loadInventory(File file) {
         //check file format using File.probeContentType, use appropriate code block
         try {
-            for (Item item : currentInventory.getItemsObservable()) {
+            /*for (Item item : currentInventory.getItemsObservable()) {
                 currentInventory.removeItem(item);
-            }
+            }*/
 
+            inventoryTable.getItems().clear();
             switch (Files.probeContentType(file.toPath())) {
                 //file Reader, File.readAllLines file path if not json, stream needs to be closed unless declared in resource specification header
                 case "text/plain":
