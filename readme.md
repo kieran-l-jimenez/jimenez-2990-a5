@@ -1,4 +1,4 @@
-#README WIP
+#README
 
 The purpose of this program is to help the user manage an inventory of items. Each item will have a name(2-256 characters),
 a serial number, and a value. The user can add, delete, and edit items. The user can search, sort, export, and load an 
@@ -28,17 +28,14 @@ This sorts the list in ascending order and clicking again sorts in descending or
 sort new items, and the user must cycle through the sort order again to have an accurately updated list.
 
 ###1.3 Export
-WIP
-
 By clicking the "File" item on the menu and clicking "Save File" a file chooser window will open where the user can 
 name their inventory file and decide where it will be stored. Files can be saved in a Tab Separated Format(TSV), in HTML,
 or in JSON.
 
 ###1.4 Load
-WIP
-
 By clicking the "File" item on the menu and clicking "Load File" a file chooser window will open where the user can
-navigate their computer and open a new Inventory file.
+navigate their computer and open a new Inventory file. This accepts Inventory files made by this program in TSV, HTML, 
+and JSON.
 
 ##3. Item Controls
 ###2.1 Add

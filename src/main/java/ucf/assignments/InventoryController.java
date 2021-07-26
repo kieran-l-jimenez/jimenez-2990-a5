@@ -8,6 +8,7 @@
  */
 package ucf.assignments;
 
+import com.google.gson.Gson;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,10 +19,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.nio.file.Files;
+import java.util.*;
 
 public class InventoryController implements Initializable {
     @FXML private TableView<Item> inventoryTable;
@@ -142,16 +149,32 @@ public class InventoryController implements Initializable {
 
     @FXML
     public void saveInventoryPressed(ActionEvent actionEvent) {
-        //new stage, set title
+        //new stage
+        Stage stage = new Stage();
         //open fileChooser
+        fileChooser.setTitle("Save Inventory");
+        File file = fileChooser.showSaveDialog(stage);
         //call appropriate save function based on file type
+        //fileChooser.showSaveDialog().isFile() boolean that returns if path is file
+        try {
+            switch (Files.probeContentType(file.toPath())) {
+                case "text/plain" -> saveTSVFormat(file);
+                case "text/html" -> saveHTMLFormat(file);
+                case "application/json" -> saveJSONFormat(file);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void loadInventoryPressed(ActionEvent actionEvent) {
         //new stage, set title
+        Stage stage = new Stage();
         //open fileChooser
-        //call loadList
+        fileChooser.setTitle("Load Inventory");
+        //call loadInventory
+        loadInventory(fileChooser.showOpenDialog(stage));
     }
 
 
@@ -225,39 +248,121 @@ public class InventoryController implements Initializable {
         }
     }
 
-    public void saveTSVFormat() {
-        //filewriter
-        //new file
-        //file print Column names(value, name, Serial Number) separated by tabs
-        //loop that goes through each item
-            //print value name serial separated by tabs
-        //close file
+    public void saveTSVFormat(File file) {
+        //file writer
+        try (FileWriter fileWriter = new FileWriter(file.getPath())) {
+            //file write Column names(value, name, Serial Number) separated by tabs
+            fileWriter.write(String.format("Value\tSerial Number\tName\n"));
+            //loop that goes through each item
+            for (Item item : currentInventory.getItemsObservable()) {
+                //print value name serial separated by tabs
+                fileWriter.write(String.format("%.2f\t%s\t%s\n", item.getMonetaryValue(), item.getSerialNumber(),
+                        item.getName()));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void saveHTMLFormat() {
-        //filewriter
-        //new file
-        //file boiler plate <html>\n <body>\n <table>
-        //file print column names <tr><th>value</th><th>name</th><th>serial number</th></tr>
-        //loop that goes through each item
-            //print <tr><td>item[i].value</td><td>item[i].name</td><td>item[i].serialNumber</td></tr> with appropriate '\n's
-        //after loop print </table></body></html>
-        //close file
+    public void saveHTMLFormat(File file) {
+        //file writer
+        try (FileWriter fileWriter = new FileWriter(file.getPath())) {
+            //file boiler plate <html>\n <body>\n <table>
+            fileWriter.write("<!DOCTYPE html>\n<html>\n<body>\n<table>\n");
+            //file print column names <tr><th>value</th><th>name</th><th>serial number</th></tr>
+            fileWriter.write("\t<tr>\n\t\t<th>Value</th>\n\t\t<th>Serial Number</th>\n\t\t<th>Name</th>\n\t</tr>\n");
+
+            //loop that goes through each item
+            for (Item item : currentInventory.getItemsObservable()) {
+                //print <tr><td>item[i].value</td><td>item[i].name</td><td>item[i].serialNumber</td></tr> with appropriate '\n's
+                fileWriter.write("\t<tr>\n");
+                fileWriter.write(String.format("\t\t<td>%s</td>\n", item.getMonetaryValue().toString()));
+                fileWriter.write(String.format("\t\t<td>%s</td>\n", item.getSerialNumber()));
+                fileWriter.write(String.format("\t\t<td>%s</td>\n", item.getName()));
+                fileWriter.write("\t</tr>\n");
+            }
+            //after loop print </table></body></html>
+            fileWriter.write("</table>\n</body>\n</html>");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void saveJSONFormat() {
+    public void saveJSONFormat(File file) {
         //new gson
-        //try filewriter filepath
-        //gson.toJson(currentInventory, fileWriter)
+        Gson gson = new Gson();
+        //try file writer filepath
+        try (FileWriter fileWriter = new FileWriter(file.getPath())) {
+            gson.toJson(currentInventory, fileWriter);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void loadInventory() {
-        //check file format, use appropriate code block
-        //file Reader
-        //.txt - skip first line, while hasNextLine:scan data in order tokenized by '\t'
-        //.html - skip to item list, when encountering <tr>, ready for new item, read between <td> for elements in order
-            //call currentInventory addItem, if </tr> stop checking for items
-        //.json - new Gson, currentInventory = gson.fromJson
-        //close file Reader
+    public void loadInventory(File file) {
+        //check file format using File.probeContentType, use appropriate code block
+        try {
+            for (Item item : currentInventory.getItemsObservable()) {
+                currentInventory.removeItem(item);
+            }
+
+            switch (Files.probeContentType(file.toPath())) {
+                //file Reader, File.readAllLines file path if not json, stream needs to be closed unless declared in resource specification header
+                case "text/plain":
+                    //.txt - skip first line, while hasNextLine:scan data in order tokenized by '\t'
+                    List<String> textArray = Files.readAllLines(file.toPath());
+
+                    Iterator iterator = textArray.listIterator();
+                    iterator.next();
+
+                    while (iterator.hasNext()) {
+                        String[] pieces = iterator.next().toString().split("\t");
+                        currentInventory.addItem(Double.parseDouble(pieces[0]), pieces[1], pieces[2]);
+                    }
+                    break;
+                case "text/html":
+                    //.html - skip to item list (skip first 9 lines), when encountering <tr>, ready for new item, read between <td> for elements in order
+                        //call currentInventory addItem, if </tr> stop checking for items
+                    List<String> htmlArray = Files.readAllLines(file.toPath());
+
+                    Iterator iteratorHTML = htmlArray.listIterator();
+                    for (int i = 0; i < 9; i++) {
+                        iteratorHTML.next();
+                    }
+
+                    while (iteratorHTML.hasNext() && iteratorHTML.next().equals("</table>\n")) {//<tr>
+                        String[] piecesHTML = new String[3];
+                        StringTokenizer tempTokenizer;
+                        tempTokenizer = new StringTokenizer(iteratorHTML.next().toString(), "<>");//<td>Value</td> becomes td, Value, /td
+                        tempTokenizer.nextToken();//skips td
+                        piecesHTML[0] = tempTokenizer.nextToken();//assign value
+                        tempTokenizer = new StringTokenizer(iteratorHTML.next().toString(), "<>");;//<td>Serial Number</td> becomes td, Serial Number, /td
+                        tempTokenizer.nextToken();//skips td
+                        piecesHTML[1] = tempTokenizer.nextToken();//assign Serial Number
+                        tempTokenizer = new StringTokenizer(iteratorHTML.next().toString(), "<>");;//<td>Name</td> becomes td, Name, /td
+                        tempTokenizer.nextToken();//skips td
+                        piecesHTML[2] = tempTokenizer.nextToken();//assign Name
+                        iteratorHTML.next();//<tr>
+                        currentInventory.addItem(Double.parseDouble(piecesHTML[0]), piecesHTML[1], piecesHTML[2]);
+                    }
+                    break;
+                case "application/json" :
+                    //.json - new Gson, currentInventory = gson.fromJson
+                    FileReader fileReader = new FileReader(file.getPath());
+                    Gson gson = new Gson();
+                    currentInventory = gson.fromJson(fileReader, Inventory.class);
+                    break;
+            }
+
+            inventoryTable.getSelectionModel().clearSelection();
+            inputValue.setText("");
+            inputSerial.setText("");
+            inputName.setText("");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
